@@ -4723,8 +4723,15 @@ You may have it installed on another user account, but it is not available for t
     .and_then(|n| n.strip_prefix("webview2-perfil="))
     .map(|n| n.to_string());
   #[cfg(windows)]
+  // O perfil fica dentro do ambiente da pasta de dados do app (a pasta-mãe de
+  // "webview2-perfil=<nome>"), o mesmo usado pela barra. Sem isso o WebView2 cai na
+  // pasta padrão ao lado do .exe e os logins antigos não aparecem.
   let web_context_key = if ethos_perfil.is_some() {
-    None
+    webview_attributes
+      .data_directory
+      .as_ref()
+      .and_then(|d| d.parent())
+      .map(|p| p.to_path_buf())
   } else {
     webview_attributes.data_directory
   };

@@ -1,6 +1,6 @@
 [package]
 name = "ethos-connect"
-version = "0.3.0"
+version = "0.3.1"
 description = "Ethos Connect - WhatsApp, WhatsApp Business e outros serviços em um só lugar"
 authors = ["Ethos Digital"]
 edition = "2021"
