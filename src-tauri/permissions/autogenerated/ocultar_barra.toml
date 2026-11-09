@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-ocultar-barra"
+description = "Enables the ocultar_barra command without any pre-configured scope."
+commands.allow = ["ocultar_barra"]
+
+[[permission]]
+identifier = "deny-ocultar-barra"
+description = "Denies the ocultar_barra command without any pre-configured scope."
+commands.deny = ["ocultar_barra"]

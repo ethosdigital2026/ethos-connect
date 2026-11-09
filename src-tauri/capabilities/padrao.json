@@ -1,0 +1,19 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "padrao",
+  "description": "Barra lateral e telas internas do Ethos Connect (calculadora, downloads)",
+  "windows": ["principal"],
+  "webviews": ["barra", "svc-*"],
+  "permissions": [
+    "core:default",
+    "allow-abrir-externo", "allow-abrir-servico", "allow-bloquear-agora", "allow-carregar-config",
+    "allow-definir-bloqueio", "allow-definir-contador", "allow-definir-notificacoes",
+    "allow-definir-notificacoes-servico", "allow-definir-pin", "allow-definir-zoom", "allow-desbloquear",
+    "allow-esqueci-pin", "allow-estado-bloqueio", "allow-hibernar-servico", "allow-menu-servico",
+    "allow-mostrar-servico", "allow-ocultar-barra", "allow-recarregar-servico", "allow-registrar-atividade",
+    "allow-remover-pin", "allow-remover-servico", "allow-salvar-config", "allow-servico-evento",
+    "allow-ui-expandir",
+    "allow-listar-downloads", "allow-abrir-download", "allow-mostrar-download", "allow-remover-download",
+    "allow-limpar-downloads", "allow-arrastar-download"
+  ]
+}

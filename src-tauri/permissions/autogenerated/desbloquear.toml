@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-desbloquear"
+description = "Enables the desbloquear command without any pre-configured scope."
+commands.allow = ["desbloquear"]
+
+[[permission]]
+identifier = "deny-desbloquear"
+description = "Denies the desbloquear command without any pre-configured scope."
+commands.deny = ["desbloquear"]

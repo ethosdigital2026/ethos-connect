@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-limpar-downloads"
+description = "Enables the limpar_downloads command without any pre-configured scope."
+commands.allow = ["limpar_downloads"]
+
+[[permission]]
+identifier = "deny-limpar-downloads"
+description = "Denies the limpar_downloads command without any pre-configured scope."
+commands.deny = ["limpar_downloads"]

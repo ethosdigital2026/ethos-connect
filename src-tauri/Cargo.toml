@@ -1,0 +1,39 @@
+[package]
+name = "ethos-connect"
+version = "0.3.0"
+description = "Ethos Connect - WhatsApp, WhatsApp Business e outros serviços em um só lugar"
+authors = ["Ethos Digital"]
+edition = "2021"
+
+[lib]
+name = "ethos_connect_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "=2.12.5", features = ["unstable", "image-png"] }
+tauri-plugin-notification = "2.3"
+tauri-plugin-opener = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-window-state = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+rand = "0.9"
+chrono = "0.4"
+webview2-com = "0.39"
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_UI_Shell", "Win32_System_RemoteDesktop", "Win32_System_Threading", "Win32_System_Com"] }
+drag = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+
+# Perfis do WebView2 (um login por serviço): ver patches/tauri-runtime-wry e LEIA-ME.md
+[patch.crates-io]
+tauri-runtime-wry = { path = "patches/tauri-runtime-wry" }

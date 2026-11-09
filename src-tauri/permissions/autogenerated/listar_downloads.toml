@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-listar-downloads"
+description = "Enables the listar_downloads command without any pre-configured scope."
+commands.allow = ["listar_downloads"]
+
+[[permission]]
+identifier = "deny-listar-downloads"
+description = "Denies the listar_downloads command without any pre-configured scope."
+commands.deny = ["listar_downloads"]

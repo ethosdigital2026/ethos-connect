@@ -1,0 +1,6 @@
+node_modules/
+src-tauri/target/
+# Cópia do executável antigo e arquivos extraídos dele (só para consulta local)
+recuperado/
+# Chave privada de assinatura das atualizações: NUNCA subir
+*.key

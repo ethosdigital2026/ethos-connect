@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-menu-servico"
+description = "Enables the menu_servico command without any pre-configured scope."
+commands.allow = ["menu_servico"]
+
+[[permission]]
+identifier = "deny-menu-servico"
+description = "Denies the menu_servico command without any pre-configured scope."
+commands.deny = ["menu_servico"]

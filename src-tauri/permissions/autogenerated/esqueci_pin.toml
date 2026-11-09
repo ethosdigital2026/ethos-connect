@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-esqueci-pin"
+description = "Enables the esqueci_pin command without any pre-configured scope."
+commands.allow = ["esqueci_pin"]
+
+[[permission]]
+identifier = "deny-esqueci-pin"
+description = "Denies the esqueci_pin command without any pre-configured scope."
+commands.deny = ["esqueci_pin"]

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-hibernar-servico"
+description = "Enables the hibernar_servico command without any pre-configured scope."
+commands.allow = ["hibernar_servico"]
+
+[[permission]]
+identifier = "deny-hibernar-servico"
+description = "Denies the hibernar_servico command without any pre-configured scope."
+commands.deny = ["hibernar_servico"]

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora</title>
+  <style>
+    @font-face { font-family: Montserrat; font-weight: 300; src: url(fonts/montserrat-latin-300-normal.woff2) format('woff2'); }
+    @font-face { font-family: Montserrat; font-weight: 500; src: url(fonts/montserrat-latin-500-normal.woff2) format('woff2'); }
+    @font-face { font-family: Montserrat; font-weight: 700; src: url(fonts/montserrat-latin-700-normal.woff2) format('woff2'); }
+
+    :root {
+      --azul: #0E2646;
+      --azul-claro: #17345C;
+      --azul-borda: #24497A;
+      --azul-tecla: #1C3D69;
+      --texto-suave: #A9B8CF;
+      --destaque: #F5B83D;
+      --vermelho: #E5484D;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: var(--azul);
+      color: #fff;
+      font-family: Montserrat, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 24px;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .calc {
+      width: min(380px, 100%);
+      background: var(--azul-claro);
+      border: 1px solid var(--azul-borda);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
+    }
+
+    .visor {
+      background: var(--azul);
+      border-radius: 14px;
+      padding: 14px 16px 12px;
+      margin-bottom: 14px;
+      text-align: right;
+      min-height: 104px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      cursor: copy;
+      position: relative;
+    }
+    .expressao {
+      color: var(--texto-suave);
+      font-size: 15px;
+      font-weight: 500;
+      min-height: 20px;
+      word-break: break-all;
+    }
+    .resultado {
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-top: 4px;
+      word-break: break-all;
+      transition: font-size .1s;
+    }
+    .resultado.longo { font-size: 28px; }
+    .resultado.muito-longo { font-size: 20px; }
+    .resultado.previa { color: var(--texto-suave); font-weight: 500; }
+    .resultado.erro { color: #FF9A9D; font-size: 20px; }
+    .copiado {
+      position: absolute; left: 14px; top: 12px;
+      font-size: 11px; font-weight: 700; color: var(--destaque);
+      opacity: 0; transition: opacity .2s;
+    }
+    .copiado.mostrar { opacity: 1; }
+
+    .teclas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+    .teclas button {
+      height: 58px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--azul-tecla);
+      color: #fff;
+      font: inherit;
+      font-size: 21px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .12s, transform .06s;
+    }
+    .teclas button:hover { background: var(--azul-borda); }
+    .teclas button:active, .teclas button.apertada { transform: scale(.96); background: #2D5A93; }
+    .teclas .funcao { background: #17345C; color: var(--texto-suave); font-size: 17px; }
+    .teclas .operador { background: #24497A; color: var(--destaque); font-size: 24px; }
+    .teclas .igual { background: #fff; color: var(--azul); font-weight: 700; font-size: 26px; }
+    .teclas .igual:hover { background: #E3EAF3; }
+    .teclas .limpar { color: #FF9A9D; }
+
+    .ajuda { margin-top: 12px; text-align: center; color: var(--texto-suave); font-size: 11px; line-height: 1.5; }
+
+    .historico {
+      width: 260px;
+      align-self: stretch;
+      max-height: 560px;
+      background: var(--azul-claro);
+      border: 1px solid var(--azul-borda);
+      border-radius: 22px;
+      padding: 16px 0 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    .historico h2 {
+      margin: 0 16px 10px; font-size: 13px; font-weight: 700; color: var(--texto-suave);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .historico h2 button {
+      border: 0; background: none; color: var(--texto-suave); font: inherit; font-size: 11px;
+      cursor: pointer; text-decoration: underline;
+    }
+    .historico h2 button:hover { color: #fff; }
+    #lista-hist { flex: 1; overflow-y: auto; padding: 0 8px; scrollbar-width: thin; }
+    #lista-hist button {
+      display: block; width: 100%; text-align: right; border: 0; background: none; color: #fff;
+      font: inherit; padding: 8px 10px; border-radius: 10px; cursor: pointer;
+    }
+    #lista-hist button:hover { background: var(--azul-borda); }
+    #lista-hist .h-exp { display: block; font-size: 12px; color: var(--texto-suave); word-break: break-all; }
+    #lista-hist .h-res { display: block; font-size: 17px; font-weight: 700; word-break: break-all; }
+    .vazio { color: var(--texto-suave); font-size: 12px; text-align: center; margin-top: 30px; }
+
+    @media (max-width: 720px) { .historico { display: none; } }
+    @media (max-height: 560px) {
+      .teclas button { height: 44px; }
+      .visor { min-height: 80px; }
+      .resultado { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <div class="visor" id="visor" title="Clique para copiar o resultado">
+      <span class="copiado" id="copiado">Copiado!</span>
+      <div class="expressao" id="expressao"></div>
+      <div class="resultado" id="resultado">0</div>
+    </div>
+    <div class="teclas" id="teclas">
+      <button class="funcao limpar" data-k="C" title="Limpar (Esc)">C</button>
+      <button class="funcao" data-k="(" title="Abre parêntese">(</button>
+      <button class="funcao" data-k=")" title="Fecha parêntese">)</button>
+      <button class="operador" data-k="/" title="Dividir (/)">÷</button>
+
+      <button data-k="7">7</button>
+      <button data-k="8">8</button>
+      <button data-k="9">9</button>
+      <button class="operador" data-k="*" title="Multiplicar (*)">×</button>
+
+      <button data-k="4">4</button>
+      <button data-k="5">5</button>
+      <button data-k="6">6</button>
+      <button class="operador" data-k="-" title="Subtrair (-)">−</button>
+
+      <button data-k="1">1</button>
+      <button data-k="2">2</button>
+      <button data-k="3">3</button>
+      <button class="operador" data-k="+" title="Somar (+)">+</button>
+
+      <button class="funcao" data-k="%" title="Porcentagem (%): 200 + 10% = 220">%</button>
+      <button data-k="0">0</button>
+      <button data-k="," title="Vírgula (, ou .)">,</button>
+      <button class="igual" data-k="=" title="Resultado (Enter)">=</button>
+
+      <button class="funcao" data-k="±" title="Trocar sinal">±</button>
+      <button class="funcao" data-k="B" title="Apagar o último (Backspace)" style="grid-column: span 3">⌫ Apagar</button>
+    </div>
+    <div class="ajuda">Use o teclado também. Clique no visor para copiar o resultado.</div>
+  </div>
+
+  <aside class="historico">
+    <h2>Histórico <button id="limpar-hist" type="button">limpar</button></h2>
+    <div id="lista-hist"></div>
+  </aside>
+
+  <script>
+    'use strict';
+    const $ = (s) => document.querySelector(s);
+    const OPERADORES = '+-*/';
+    const SIMBOLOS = { '*': '×', '/': '÷', '-': '−' };
+    const CHAVE_HIST = 'ethos-calc-historico';
+
+    let expr = '';          // expressão interna: dígitos, ".", "+-*/", "()", "%"
+    let acabouDeCalcular = false;
+    let historico = [];
+    try { historico = JSON.parse(localStorage.getItem(CHAVE_HIST)) || []; } catch { historico = []; }
+
+    // ---------- Cálculo (sem eval) ----------
+    // expr  := termo (("+"|"-") termo)*
+    // termo := fator (("*"|"/") fator)*
+    // fator := ("-"|"+") fator | primario "%"?
+    // "a + b%" soma b por cento de a; "a × b%" multiplica por b/100 (como nas calculadoras de mesa)
+    function calcular(texto) {
+      let i = 0;
+      const espiar = () => texto[i];
+      const falha = () => { throw new Error('Expressão incompleta'); };
+
+      function primario() {
+        if (espiar() === '(') {
+          i++;
+          const v = expressao();
+          if (espiar() === ')') i++;            // parêntese sem fechar é aceito
+          return v;
+        }
+        const ini = i;
+        while (i < texto.length && /[0-9.]/.test(texto[i])) i++;
+        if (ini === i) falha();
+        const n = Number(texto.slice(ini, i));
+        if (!Number.isFinite(n)) falha();
+        return n;
+      }
+      function fator() {
+        if (espiar() === '-') { i++; return { v: -fator().v, pct: false }; }
+        if (espiar() === '+') { i++; return fator(); }
+        let v = primario();
+        let pct = false;
+        while (espiar() === '%') { i++; v = v / 100; pct = true; }
+        return { v, pct };
+      }
+      function termo() {
+        let { v, pct } = fator();
+        while (espiar() === '*' || espiar() === '/') {
+          const op = texto[i++];
+          const d = fator().v;
+          if (op === '/' && d === 0) throw new Error('Não dá para dividir por zero');
+          v = op === '*' ? v * d : v / d;
+          pct = false;
+        }
+        return { v, pct };
+      }
+      function expressao() {
+        let { v } = termo();
+        while (espiar() === '+' || espiar() === '-') {
+          const op = texto[i++];
+          const t = termo();
+          const d = t.pct ? v * t.v : t.v;     // 200 + 10% = 220
+          v = op === '+' ? v + d : v - d;
+        }
+        return v;
+      }
+
+      if (!texto) return 0;
+      const v = expressao();
+      if (i < texto.length) falha();
+      if (!Number.isFinite(v)) throw new Error('Número grande demais');
+      // Corrige ruído de ponto flutuante (0,1 + 0,2 = 0,3)
+      return Number.parseFloat(v.toPrecision(14));
+    }
+
+    // ---------- Formatação pt-BR ----------
+    function formatarNumero(n) {
+      if (Math.abs(n) >= 1e15 || (n !== 0 && Math.abs(n) < 1e-9)) {
+        return n.toExponential(8).replace('.', ',').replace(/0+e/, 'e').replace(',e', 'e');
+      }
+      return n.toLocaleString('pt-BR', { maximumFractionDigits: 10 });
+    }
+
+    // Mostra a expressão com vírgula decimal e separador de milhar
+    function formatarExpressao(texto) {
+      return texto.replace(/[0-9.]+|[^0-9.]/g, (parte) => {
+        if (/^[0-9.]+$/.test(parte)) {
+          const [int, dec] = parte.split('.');
+          const intFmt = int ? Number(int).toLocaleString('pt-BR') : '0';
+          return dec !== undefined ? `${intFmt},${dec}` : intFmt;
+        }
+        return SIMBOLOS[parte] ? ` ${SIMBOLOS[parte]} ` : OPERADORES.includes(parte) ? ` ${parte} ` : parte;
+      });
+    }
+
+    // ---------- Tela ----------
+    function mostrar(resultado, { previa = false, erro = false } = {}) {
+      const r = $('#resultado');
+      r.textContent = resultado;
+      r.classList.toggle('previa', previa);
+      r.classList.toggle('erro', erro);
+      r.classList.toggle('longo', !erro && resultado.length > 12);
+      r.classList.toggle('muito-longo', !erro && resultado.length > 18);
+    }
+
+    function atualizar() {
+      $('#expressao').textContent = formatarExpressao(expr);
+      if (!expr) { mostrar('0'); return; }
+      // Prévia do resultado enquanto digita (sem mostrar erro de expressão incompleta)
+      try {
+        const v = calcular(expr.replace(/[+\-*/(]+$/, ''));
+        mostrar(formatarNumero(v), { previa: true });
+      } catch { /* incompleta: mantém a prévia anterior */ }
+    }
+
+    function ultimoNumero() {
+      const m = expr.match(/[0-9.]*$/);
+      return m ? m[0] : '';
+    }
+
+    function teclar(k) {
+      if (acabouDeCalcular) {
+        // Depois do "=", número começa conta nova; operador continua do resultado
+        if (/[0-9,.(]/.test(k)) expr = '';
+        acabouDeCalcular = false;
+      }
+      const ultimo = expr.slice(-1);
+      if (/[0-9]/.test(k)) {
+        if (ultimo === ')' || ultimo === '%') expr += '*';
+        if (ultimoNumero() === '0') expr = expr.slice(0, -1);
+        expr += k;
+      } else if (k === ',' || k === '.') {
+        const num = ultimoNumero();
+        if (num.includes('.')) return;
+        if (ultimo === ')' || ultimo === '%') expr += '*';
+        expr += num === '' ? '0.' : '.';
+      } else if (OPERADORES.includes(k)) {
+        if (!expr) { if (k === '-') expr = '-'; }
+        else if (OPERADORES.includes(ultimo)) {
+          // troca o operador (deixa "×−" para número negativo)
+          if (k === '-' && (ultimo === '*' || ultimo === '/')) expr += k;
+          else expr = expr.replace(/[+\-*/]+$/, '') + k;
+          if (!expr.replace(/[+\-*/]/g, '')) expr = k === '-' ? '-' : '';
+        } else if (ultimo === '(') { if (k === '-') expr += k; }
+        else expr += k;
+      } else if (k === '(') {
+        if (/[0-9.)%]/.test(ultimo)) expr += '*';
+        expr += '(';
+      } else if (k === ')') {
+        const abertos = (expr.match(/\(/g) || []).length - (expr.match(/\)/g) || []).length;
+        if (abertos > 0 && /[0-9.)%]/.test(ultimo)) expr += ')';
+      } else if (k === '%') {
+        if (/[0-9.)]/.test(ultimo)) expr += '%';
+      } else if (k === '±') {
+        const m = expr.match(/(^|[+\-*/(])(-?)([0-9.]+%?)$/);
+        if (m) {
+          const ini = expr.length - m[2].length - m[3].length;
+          expr = expr.slice(0, ini) + (m[2] ? '' : '-') + m[3];
+        } else if (!expr) expr = '-';
+      } else if (k === 'B') {
+        expr = expr.slice(0, -1);
+      } else if (k === 'C') {
+        expr = '';
+      } else if (k === '=') {
+        resolver();
+        return;
+      }
+      atualizar();
+    }
+
+    function resolver() {
+      if (!expr) return;
+      try {
+        const limpa = expr.replace(/[+\-*/(]+$/, '');
+        const v = calcular(limpa);
+        const textoExpr = formatarExpressao(limpa);
+        const textoRes = formatarNumero(v);
+        $('#expressao').textContent = `${textoExpr} =`;
+        mostrar(textoRes);
+        guardar(textoExpr, textoRes, String(v));
+        expr = String(v).includes('e') ? '' : String(v);
+        acabouDeCalcular = true;
+      } catch (e) {
+        mostrar(e.message, { erro: true });
+      }
+    }
+
+    // ---------- Histórico ----------
+    function guardar(textoExpr, textoRes, valor) {
+      historico.unshift({ e: textoExpr, r: textoRes, v: valor });
+      historico = historico.slice(0, 50);
+      try { localStorage.setItem(CHAVE_HIST, JSON.stringify(historico)); } catch {}
+      desenharHistorico();
+    }
+
+    function desenharHistorico() {
+      const lista = $('#lista-hist');
+      lista.replaceChildren();
+      if (!historico.length) {
+        lista.innerHTML = '<p class="vazio">As contas aparecem aqui.</p>';
+        return;
+      }
+      for (const h of historico) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.title = 'Usar este resultado';
+        const e = document.createElement('span'); e.className = 'h-exp'; e.textContent = `${h.e} =`;
+        const r = document.createElement('span'); r.className = 'h-res'; r.textContent = h.r;
+        b.append(e, r);
+        b.addEventListener('click', () => {
+          expr = h.v.includes('e') ? '' : h.v;
+          acabouDeCalcular = true;
+          $('#expressao').textContent = `${h.e} =`;
+          mostrar(h.r);
+        });
+        lista.append(b);
+      }
+    }
+
+    $('#limpar-hist').addEventListener('click', () => {
+      historico = [];
+      try { localStorage.removeItem(CHAVE_HIST); } catch {}
+      desenharHistorico();
+    });
+
+    // ---------- Entrada ----------
+    $('#teclas').addEventListener('click', (ev) => {
+      const b = ev.target.closest('button[data-k]');
+      if (b) teclar(b.dataset.k);
+    });
+
+    const MAPA_TECLADO = { Enter: '=', '=': '=', Escape: 'C', Delete: 'C', Backspace: 'B', x: '*', X: '*' };
+    document.addEventListener('keydown', (ev) => {
+      if (ev.ctrlKey && ev.key.toLowerCase() === 'c') { copiar(); return; }
+      if (ev.ctrlKey || ev.altKey || ev.metaKey) return;
+      let k = MAPA_TECLADO[ev.key] ?? ev.key;
+      if (ev.code === 'NumpadDecimal') k = ',';
+      if (!/^[0-9.,+\-*/()%=CB]$/.test(k)) return;
+      ev.preventDefault();
+      teclar(k);
+      const botao = document.querySelector(`button[data-k="${CSS.escape(k === '.' ? ',' : k)}"]`);
+      if (botao) {
+        botao.classList.add('apertada');
+        setTimeout(() => botao.classList.remove('apertada'), 100);
+      }
+    });
+
+    // Colar uma conta (ex.: "1.250,50 + 10%")
+    document.addEventListener('paste', (ev) => {
+      const texto = (ev.clipboardData?.getData('text') || '').replace(/\s/g, '');
+      if (!texto) return;
+      ev.preventDefault();
+      const normal = texto.replace(/\.(?=\d{3}(\D|$))/g, '').replace(/,/g, '.').replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+      if (/^[0-9.+\-*/()%]+$/.test(normal)) {
+        if (acabouDeCalcular) { expr = ''; acabouDeCalcular = false; }
+        expr += normal;
+        atualizar();
+      }
+    });
+
+    async function copiar() {
+      const texto = $('#resultado').textContent;
+      if ($('#resultado').classList.contains('erro')) return;
+      try {
+        await navigator.clipboard.writeText(texto);
+        $('#copiado').classList.add('mostrar');
+        setTimeout(() => $('#copiado').classList.remove('mostrar'), 1100);
+      } catch {}
+    }
+    $('#visor').addEventListener('click', copiar);
+    document.addEventListener('contextmenu', (ev) => ev.preventDefault());
+
+    desenharHistorico();
+    atualizar();
+  </script>
+</body>
+</html>

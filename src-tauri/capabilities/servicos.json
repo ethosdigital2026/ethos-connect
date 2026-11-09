@@ -1,0 +1,9 @@
+{
+  "$schema": "../gen/schemas/remote-schema.json",
+  "identifier": "servicos",
+  "description": "Sites abertos no app (WhatsApp, Gmail...): só podem avisar eventos ao Ethos Connect",
+  "windows": ["principal"],
+  "webviews": ["svc-*"],
+  "remote": { "urls": ["https://*", "https://*/*", "http://*", "http://*/*"] },
+  "permissions": ["allow-servico-evento"]
+}

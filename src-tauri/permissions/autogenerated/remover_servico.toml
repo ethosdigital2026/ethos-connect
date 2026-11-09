@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-remover-servico"
+description = "Enables the remover_servico command without any pre-configured scope."
+commands.allow = ["remover_servico"]
+
+[[permission]]
+identifier = "deny-remover-servico"
+description = "Denies the remover_servico command without any pre-configured scope."
+commands.deny = ["remover_servico"]

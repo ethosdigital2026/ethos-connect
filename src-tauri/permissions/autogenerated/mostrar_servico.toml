@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-mostrar-servico"
+description = "Enables the mostrar_servico command without any pre-configured scope."
+commands.allow = ["mostrar_servico"]
+
+[[permission]]
+identifier = "deny-mostrar-servico"
+description = "Denies the mostrar_servico command without any pre-configured scope."
+commands.deny = ["mostrar_servico"]

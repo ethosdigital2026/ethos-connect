@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-bloquear-agora"
+description = "Enables the bloquear_agora command without any pre-configured scope."
+commands.allow = ["bloquear_agora"]
+
+[[permission]]
+identifier = "deny-bloquear-agora"
+description = "Denies the bloquear_agora command without any pre-configured scope."
+commands.deny = ["bloquear_agora"]

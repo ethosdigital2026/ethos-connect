@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-recarregar-servico"
+description = "Enables the recarregar_servico command without any pre-configured scope."
+commands.allow = ["recarregar_servico"]
+
+[[permission]]
+identifier = "deny-recarregar-servico"
+description = "Denies the recarregar_servico command without any pre-configured scope."
+commands.deny = ["recarregar_servico"]
