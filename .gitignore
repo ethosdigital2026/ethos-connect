@@ -4,3 +4,4 @@ src-tauri/target/
 recuperado/
 # Chave privada de assinatura das atualizações: NUNCA subir
 *.key
+publicar/
